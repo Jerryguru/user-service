@@ -1,0 +1,4 @@
+package com.userservice.exception;
+
+public class UserNotFoundException {
+}
