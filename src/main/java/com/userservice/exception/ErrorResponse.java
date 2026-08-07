@@ -2,35 +2,44 @@ package com.userservice.exception;
 
 import java.time.LocalDateTime;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Standard Error Response.
  */
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ErrorResponse {
 
     /**
-     * Error Time
+     * Error occurred time.
      */
     private LocalDateTime timestamp;
 
     /**
-     * HTTP Status Code
+     * HTTP Status Code.
      */
     private int status;
 
     /**
-     * Error Message
+     * HTTP Status Name.
+     * Example:
+     * NOT_FOUND
+     * CONFLICT
+     * BAD_REQUEST
+     */
+    private String error;
+
+    /**
+     * Detailed Error Message.
      */
     private String message;
 
     /**
-     * Request Path
+     * API Request Path.
      */
     private String path;
 

@@ -2,6 +2,7 @@ package com.userservice.service;
 
 import com.userservice.dto.request.UserRegistrationRequest;
 import com.userservice.dto.response.UserRegistrationResponse;
+import com.userservice.dto.response.UserResponse;
 
 /**
  * ==========================================================
@@ -24,6 +25,15 @@ public interface UserService {
      */
     UserRegistrationResponse registerUser(
             UserRegistrationRequest request);
+
+    /**
+     * Retrieves user details using the user ID.
+     *
+     * @param id User primary key
+     * @return UserResponse containing user details
+     */
+    UserResponse getUserById(Long id);
+
 
 }
 

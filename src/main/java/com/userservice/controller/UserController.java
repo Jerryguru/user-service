@@ -1,5 +1,7 @@
 package com.userservice.controller;
 
+import com.userservice.dto.response.UserResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class UserController {
 
     /**
@@ -62,6 +65,45 @@ public class UserController {
                 .body(response);
     }
 
+
+    /**
+     * ==========================================================
+     * API Name : Get User By ID
+     *
+     * Description:
+     * Retrieves user details using the given User ID.
+     *
+     * URL:
+     * GET /api/v1/users/{id}
+     * ==========================================================
+     *
+     * @param id User ID
+     * @return UserResponse
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(
+            @PathVariable Long id) {
+
+        /**
+         * Log incoming request.
+         */
+        log.info("Received request to fetch user with ID : {}", id);
+
+        /**
+         * Call Service Layer.
+         */
+        UserResponse response = userService.getUserById(id);
+
+        /**
+         * Log successful response.
+         */
+        log.info("Successfully fetched user with ID : {}", id);
+
+        /**
+         * Return HTTP 200 OK response.
+         */
+        return ResponseEntity.ok(response);
+    }
 }
 
 

@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 
 import com.userservice.enums.UserStatus;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Response DTO returned to the client.
  */
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class UserResponse {

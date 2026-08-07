@@ -1,5 +1,8 @@
 package com.userservice.service.impl;
 
+import com.userservice.dto.response.UserResponse;
+import com.userservice.exception.UserNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.userservice.dto.request.UserRegistrationRequest;
@@ -30,6 +33,7 @@ import lombok.RequiredArgsConstructor;
  */
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
@@ -102,6 +106,74 @@ public class UserServiceImpl implements UserService {
                 .lastName(savedUser.getLastName())
                 .message("User Registered Successfully")
                 .build();
+    }
+
+    /**
+     * ==========================================================
+     * Retrieves User Details using User ID.
+     *
+     * Flow:
+     * 1. Validate User ID.
+     * 2. Fetch User from Database.
+     * 3. Throw Exception if User not found.
+     * 4. Convert Entity into Response DTO.
+     * 5. Return Response.
+     * ==========================================================
+     *
+     * @param id User ID
+     * @return UserResponse
+     */
+    @Override
+    public UserResponse getUserById(Long id) {
+
+        /**
+         * Log incoming request.
+         */
+        log.info("Fetching user details for ID : {}", id);
+
+        /**
+         * Fetch user from database.
+         * Throw exception if user does not exist.
+         */
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> {
+
+                    log.error("User not found with ID : {}", id);
+
+                    return new UserNotFoundException(
+                            "User not found with ID : " + id);
+                });
+
+        /**
+         * User found successfully.
+         */
+        log.info("User found successfully with ID : {}", id);
+
+        /**
+         * Convert Entity into Response DTO.
+         */
+        log.info("Converting User Entity into UserResponse DTO.");
+
+        UserResponse response = new UserResponse();
+
+        response.setId(user.getId());
+        response.setFirstName(user.getFirstName());
+        response.setLastName(user.getLastName());
+        response.setEmail(user.getEmail());
+        response.setPhone(user.getPhone());
+        response.setStatus(user.getStatus());
+        response.setCreatedDate(user.getCreatedDate());
+        response.setUpdatedDate(user.getUpdatedDate());
+
+        /**
+         * DTO prepared successfully.
+         */
+        log.info("UserResponse prepared successfully for ID : {}", id);
+
+        /**
+         * Return response.
+         */
+        return response;
     }
 
 }
