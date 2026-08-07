@@ -170,6 +170,26 @@ public class UserController {
          */
         return ResponseEntity.ok(response);
     }
+    /**
+     * Fetch user by email.
+     *
+     * @param email user email
+     * @return UserResponse
+     */
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserResponse> getUserByEmail(
+            @PathVariable String email) {
+
+        log.info("Received request to fetch user with email: {}", email);
+
+        UserResponse response = userService.getUserByEmail(email);
+
+        log.info("Returning user details for email: {}", email);
+
+        return ResponseEntity.ok(response);
+    }
+
+
 }
 
 

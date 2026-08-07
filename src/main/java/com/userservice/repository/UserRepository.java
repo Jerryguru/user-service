@@ -30,6 +30,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     /**
      * Find User by Email.
      *
+     *   @param email user email
+     *   @return Optional<User>
      * Used during:
      * - Login
      * - Fetch User by Email
@@ -42,6 +44,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Used during Registration.
      */
     boolean existsByEmail(String email);
+
+
 
 }
 

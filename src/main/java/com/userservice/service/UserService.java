@@ -65,6 +65,14 @@ public interface UserService {
             int size,
             String sortBy,
             String direction);
+
+    /**
+     * Fetch user by email.
+     *
+     * @param email user email
+     * @return UserResponse
+     */
+    UserResponse getUserByEmail(String email);
 }
 
 

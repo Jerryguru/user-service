@@ -325,9 +325,35 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    @Override
+    public UserResponse getUserByEmail(String email) {
 
+        /**
+         * Log incoming request.
+         */
+        log.info("Fetching user with email: {}", email);
 
+        /**
+         * Fetch user from database.
+         */
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("User not found with email: {}", email);
+                    return new UserNotFoundException(
+                            "User not found with email: " + email
+                    );
+                });
 
+        /**
+         * Log successful retrieval.
+         */
+        log.info("User found successfully with email: {}", email);
+
+        /**
+         * Convert Entity to DTO.
+         */
+        return mapToUserResponse(user);
+    }
 
 
     /**
