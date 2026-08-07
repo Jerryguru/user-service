@@ -1,5 +1,6 @@
 package com.userservice.service.impl;
 
+import com.userservice.dto.response.PageResponse;
 import com.userservice.dto.response.UserResponse;
 import com.userservice.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,13 @@ import com.userservice.enums.UserStatus;
 import com.userservice.repository.UserAddressRepository;
 import com.userservice.repository.UserRepository;
 import com.userservice.service.UserService;
+
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import lombok.RequiredArgsConstructor;
 
@@ -175,6 +183,179 @@ public class UserServiceImpl implements UserService {
          */
         return response;
     }
+
+    /**
+     * ==========================================================
+     * Retrieves all users with Pagination and Sorting.
+     *
+     * Flow:
+     * 1. Create Sort object.
+     * 2. Create Pageable object.
+     * 3. Fetch Users from Database.
+     * 4. Convert Entity to DTO.
+     * 5. Build PageResponse.
+     * 6. Return Response.
+     * ==========================================================
+     *
+     * @param page Current page number
+     * @param size Number of records per page
+     * @param sortBy Field name used for sorting
+     * @param direction Sorting direction (ASC / DESC)
+     * @return Paginated UserResponse
+     */
+    @Override
+    public PageResponse<UserResponse> getAllUsers(
+            int page,
+            int size,
+            String sortBy,
+            String direction) {
+
+        /**
+         * Log incoming request.
+         */
+        log.info(
+                "Fetching users with page={}, size={}, sortBy={}, direction={}",
+                page,
+                size,
+                sortBy,
+                direction
+        );
+
+        /**
+         * Create Sort object.
+         */
+        Sort sort = Sort.by(
+                Sort.Direction.fromString(direction),
+                sortBy
+        );
+        /**
+         * Sort object created.
+         */
+        log.info("Sorting users by '{}' in '{}' order.",
+                sortBy,
+                direction
+        );
+
+        /**
+         * Create Pageable object.
+         */
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                sort
+        );
+        /**
+         * Pageable object created.
+         */
+        log.info(
+                "Pageable created successfully. Page={}, Size={}",
+                page,
+                size
+        );
+
+        /**
+         * Fetch users from database.
+         */
+        log.info("Fetching users from database.");
+
+        Page<User> userPage = userRepository.findAll(pageable);
+
+        /**
+         * Pageable object created.
+         */
+        log.info("Pageable created successfully. Page={}, Size={}",
+                page,
+                size
+        );
+
+
+        /**
+         * Database returned records.
+         */
+        log.info(
+                "Database returned {} records for current page.",
+                userPage.getNumberOfElements()
+        );
+
+        /**
+         * Check whether users are available.
+         */
+        if (userPage.isEmpty()) {
+
+            log.info("No users found in database.");
+
+        }
+
+        log.info("Fetched {} users from database.",
+                userPage.getNumberOfElements());
+
+        /**
+         * Convert Entity into DTO.
+         */
+        List<UserResponse> responseList =
+                userPage.getContent()
+                        .stream()
+                        .map(this::mapToUserResponse)
+                        .toList();
+
+        log.info(
+                "Successfully converted User entities into UserResponse DTOs.");
+
+        /**
+         * Prepare PageResponse.
+         */
+        PageResponse<UserResponse> response =
+                PageResponse.<UserResponse>builder()
+                        .content(responseList)
+                        .page(userPage.getNumber())
+                        .size(userPage.getSize())
+                        .totalElements(userPage.getTotalElements())
+                        .totalPages(userPage.getTotalPages())
+                        .first(userPage.isFirst())
+                        .last(userPage.isLast())
+                        .build();
+        /**
+         * PageResponse prepared successfully.
+         */
+        log.info(
+                "Returning paginated response with {} total elements and {} total pages.",
+                userPage.getTotalElements(),
+                userPage.getTotalPages());
+
+        return response;
+    }
+
+
+
+
+
+
+    /**
+     * ==========================================================
+     * Converts User Entity into UserResponse DTO.
+     *
+     * @param user User Entity
+     * @return UserResponse
+     * ==========================================================
+     */
+    private UserResponse mapToUserResponse(
+            User user) {
+
+        UserResponse response = new UserResponse();
+
+        response.setId(user.getId());
+        response.setFirstName(user.getFirstName());
+        response.setLastName(user.getLastName());
+        response.setEmail(user.getEmail());
+        response.setPhone(user.getPhone());
+        response.setStatus(user.getStatus());
+        response.setCreatedDate(user.getCreatedDate());
+        response.setUpdatedDate(user.getUpdatedDate());
+
+        return response;
+    }
+
+
 
 }
 

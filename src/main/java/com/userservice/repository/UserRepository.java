@@ -15,13 +15,12 @@ import com.userservice.entity.User;
  * Description:
  * Handles all database operations related to User Entity.
  *
- * JpaRepository provides:
- * - Save
- * - Find
- * - Update
- * - Delete
- * - Pagination
- * - Sorting
+ * JpaRepository already provides:
+ * - save()
+ * - findById()
+ * - findAll()
+ * - deleteById()
+ * - existsById()
  * ==========================================================
  */
 

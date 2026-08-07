@@ -1,8 +1,11 @@
 package com.userservice.service;
 
 import com.userservice.dto.request.UserRegistrationRequest;
+import com.userservice.dto.response.PageResponse;
 import com.userservice.dto.response.UserRegistrationResponse;
 import com.userservice.dto.response.UserResponse;
+
+import java.util.List;
 
 /**
  * ==========================================================
@@ -35,6 +38,33 @@ public interface UserService {
     UserResponse getUserById(Long id);
 
 
+    /**
+     * Retrieves all users.
+     *
+     * @return List of UserResponse
+     */
+  //  List<UserResponse> getAllUsers();
+    /**
+     * Retrieves all users with Pagination and Sorting.
+     *
+     * Flow:
+     * 1. Accept page details.
+     * 2. Accept sorting details.
+     * 3. Fetch users from database.
+     * 4. Convert Entity into DTO.
+     * 5. Return PageResponse.
+     *
+     * @param page Page Number
+     * @param size Page Size
+     * @param sortBy Sort Field
+     * @param direction Sort Direction
+     * @return PageResponse<UserResponse>
+     */
+    PageResponse<UserResponse> getAllUsers(
+            int page,
+            int size,
+            String sortBy,
+            String direction);
 }
 
 

@@ -1,5 +1,6 @@
 package com.userservice.controller;
 
+import com.userservice.dto.response.PageResponse;
 import com.userservice.dto.response.UserResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -101,6 +102,71 @@ public class UserController {
 
         /**
          * Return HTTP 200 OK response.
+         */
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * ==========================================================
+     * API Name : Get All Users
+     *
+     * Description:
+     * Retrieves users with
+     * Pagination and Sorting.
+     *
+     * URL
+     * GET /api/v1/users
+     *
+     * ==========================================================
+     *
+     * @return PageResponse<UserResponse>
+     */
+    @GetMapping
+    public ResponseEntity<PageResponse<UserResponse>>
+    getAllUsers(
+
+            @RequestParam(defaultValue = "0")
+            int page,
+
+            @RequestParam(defaultValue = "10")
+            int size,
+
+            @RequestParam(defaultValue = "firstName")
+            String sortBy,
+
+            @RequestParam(defaultValue = "ASC")
+            String direction
+    ) {
+
+        /**
+         * Incoming Request Log.
+         */
+        log.info(
+                "Received request to fetch users with page={}, size={}, sortBy={}, direction={}",
+                page,
+                size,
+                sortBy,
+                direction
+        );
+
+        /**
+         * Call Service Layer.
+         */
+        PageResponse<UserResponse> response =
+                userService.getAllUsers(
+                        page,
+                        size,
+                        sortBy,
+                        direction
+                );
+
+        /**
+         * Success Log.
+         */
+        log.info("Returning paginated user response.");
+
+        /**
+         * Return Response.
          */
         return ResponseEntity.ok(response);
     }
