@@ -1,5 +1,6 @@
 package com.userservice.service.impl;
 
+import com.userservice.dto.request.PatchUserRequest;
 import com.userservice.dto.request.UserRequest;
 import com.userservice.dto.response.PageResponse;
 import com.userservice.dto.response.UserResponse;
@@ -16,6 +17,7 @@ import com.userservice.enums.UserStatus;
 import com.userservice.repository.UserAddressRepository;
 import com.userservice.repository.UserRepository;
 import com.userservice.service.UserService;
+import com.userservice.enums.UserStatus;
 
 import java.util.List;
 
@@ -409,6 +411,188 @@ public class UserServiceImpl implements UserService {
         return mapToUserResponse(updatedUser);
     }
 
+    /**
+     * ==========================================================
+     * PATCH USER
+     *
+     * Performs a partial update of an existing user.
+     *
+     * PATCH rule:
+     * Only the fields supplied by the client
+     * will be updated.
+     *
+     * Fields that are null will remain unchanged.
+     * ==========================================================
+     */
+    @Override
+    public UserResponse patchUser(
+            Long id,
+            PatchUserRequest request) {
+
+        /**
+         * STEP 1:
+         *
+         * Log the incoming PATCH request.
+         *
+         * We log only the user ID.
+         * We avoid logging sensitive user data.
+         */
+        log.info(
+                "Partially updating user with id: {}",
+                id
+        );
+
+        /**
+         * STEP 2:
+         *
+         * Find the existing user.
+         *
+         * findById() returns Optional<User>.
+         *
+         * If user does not exist,
+         * UserNotFoundException is thrown.
+         */
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> {
+
+                    log.error(
+                            "User not found with id: {}",
+                            id
+                    );
+
+                    return new UserNotFoundException(
+                            "User not found with id: " + id
+                    );
+                });
+
+        /**
+         * STEP 3:
+         *
+         * Update firstName only when
+         * the client provides firstName.
+         *
+         * If firstName is null,
+         * existing firstName remains unchanged.
+         */
+        if (request.getFirstName() != null) {
+
+            existingUser.setFirstName(
+                    request.getFirstName()
+            );
+        }
+
+        /**
+         * STEP 4:
+         *
+         * Update lastName only when
+         * the client provides lastName.
+         */
+        if (request.getLastName() != null) {
+
+            existingUser.setLastName(
+                    request.getLastName()
+            );
+        }
+
+        /**
+         * STEP 5:
+         *
+         * Update email only when
+         * the client provides email.
+         */
+        if (request.getEmail() != null) {
+
+            /**
+             * Check whether the requested email
+             * is different from the current email.
+             *
+             * If it is different,
+             * check whether another user
+             * already owns that email.
+             */
+            if (!existingUser.getEmail()
+                    .equals(request.getEmail())
+                    &&
+                    userRepository.existsByEmail(
+                            request.getEmail())) {
+
+                /**
+                 * Log duplicate email attempt.
+                 */
+                log.error("Email already exists: {}",
+                        request.getEmail());
+
+                /**
+                 * Use our existing project exception.
+                 */
+                throw new DuplicateEmailException(
+                        "Email already exists: "
+                                + request.getEmail());
+            }
+
+            /**
+             * Email is available.
+             * Update the existing user's email.
+             */
+            existingUser.setEmail(
+                    request.getEmail());
+        }
+
+        /**
+         * STEP 6:
+         *
+         * Update phone only when
+         * the client provides phone.
+         */
+        if (request.getPhone() != null) {
+
+            existingUser.setPhone(
+                    request.getPhone());
+        }
+
+        /**
+         * STEP 7:
+         *
+         * Update status only when
+         * the client provides status.
+         */
+        if (request.getStatus() != null) {
+
+            existingUser.setStatus(request.getStatus());
+        }
+
+        /**
+         * STEP 8:
+         *
+         * Save the existing user.
+         *
+         * We are NOT creating a new User object.
+         *
+         * We modify the existing entity and
+         * save it back to the database.
+         */
+        User updatedUser = userRepository.save(existingUser);
+
+        /**
+         * STEP 9:
+         *
+         * Log successful PATCH operation.
+         */
+        log.info(
+                "User partially updated successfully with id: {}", id);
+
+        /**
+         * STEP 10:
+         *
+         * Convert updated Entity to
+         * UserResponse DTO.
+         *
+         * We do not return Entity directly.
+         */
+        return mapToUserResponse(
+                updatedUser
+        );
+    }
     /**
      * ==========================================================
      * Converts User Entity into UserResponse DTO.

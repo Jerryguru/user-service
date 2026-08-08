@@ -1,5 +1,6 @@
 package com.userservice.controller;
 
+import com.userservice.dto.request.PatchUserRequest;
 import com.userservice.dto.request.UserRequest;
 import com.userservice.dto.response.PageResponse;
 import com.userservice.dto.response.UserResponse;
@@ -210,6 +211,27 @@ public class UserController {
 
         return ResponseEntity.ok(response);
     }
+    /**
+     * Partially update an existing user.
+     *
+     * @param id user id
+     * @param request patch request
+     * @return updated user response
+     */
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserResponse> patchUser(
+            @PathVariable Long id,
+            @Valid @RequestBody PatchUserRequest request) {
+
+        log.info("Received request to partially update user with id: {}", id);
+
+        UserResponse response = userService.patchUser(id, request);
+
+        log.info("User partially updated successfully with id: {}", id);
+
+        return ResponseEntity.ok(response);
+    }
+
 
 }
 

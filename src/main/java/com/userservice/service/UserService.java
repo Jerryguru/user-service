@@ -1,5 +1,6 @@
 package com.userservice.service;
 
+import com.userservice.dto.request.PatchUserRequest;
 import com.userservice.dto.request.UserRegistrationRequest;
 import com.userservice.dto.request.UserRequest;
 import com.userservice.dto.response.PageResponse;
@@ -85,6 +86,23 @@ public interface UserService {
     UserResponse updateUser(
             Long id,
             UserRequest request
+    );
+
+    /**
+     * Performs a partial update of an existing user.
+     *
+     * PATCH API uses this method.
+     *
+     * Only the fields supplied by the client
+     * will be updated.
+     *
+     * @param id user ID
+     * @param request partial update request
+     * @return partially updated user response
+     */
+    UserResponse patchUser(
+            Long id,
+            PatchUserRequest request
     );
 }
 
