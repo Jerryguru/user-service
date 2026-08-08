@@ -1,7 +1,9 @@
 package com.userservice.service.impl;
 
+import com.userservice.dto.request.UserRequest;
 import com.userservice.dto.response.PageResponse;
 import com.userservice.dto.response.UserResponse;
+import com.userservice.exception.DuplicateEmailException;
 import com.userservice.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -355,6 +357,57 @@ public class UserServiceImpl implements UserService {
         return mapToUserResponse(user);
     }
 
+
+
+    /**
+     * Update existing user.
+     *
+     * @param id User ID
+     * @param request Updated user details
+     * @return Updated user response
+     */
+    @Override
+    public UserResponse updateUser(Long id, UserRequest request) {
+
+        // Log update request.
+        log.info("Updating user with id: {}", id);
+
+        // Retrieve existing user.
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("User not found with id: {}", id);
+                    return new UserNotFoundException(
+                            "User not found with id: " + id
+                    );
+                });
+
+        // Validate duplicate email only if email is changed.
+        if (!existingUser.getEmail().equals(request.getEmail())
+                && userRepository.existsByEmail(request.getEmail())) {
+
+            log.error("Email already exists: {}", request.getEmail());
+
+            throw new DuplicateEmailException(
+                    "Email already exists: " + request.getEmail()
+            );
+        }
+
+        // Update user details.
+        existingUser.setFirstName(request.getFirstName());
+        existingUser.setLastName(request.getLastName());
+        existingUser.setEmail(request.getEmail());
+        existingUser.setPhone(request.getPhone());
+        existingUser.setStatus(request.getStatus());
+
+        // Save updated user.
+        User updatedUser = userRepository.save(existingUser);
+
+        // Log successful update.
+        log.info("User updated successfully with id: {}", id);
+
+        // Convert entity to response DTO.
+        return mapToUserResponse(updatedUser);
+    }
 
     /**
      * ==========================================================

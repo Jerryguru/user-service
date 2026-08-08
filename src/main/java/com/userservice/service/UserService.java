@@ -1,6 +1,7 @@
 package com.userservice.service;
 
 import com.userservice.dto.request.UserRegistrationRequest;
+import com.userservice.dto.request.UserRequest;
 import com.userservice.dto.response.PageResponse;
 import com.userservice.dto.response.UserRegistrationResponse;
 import com.userservice.dto.response.UserResponse;
@@ -73,6 +74,18 @@ public interface UserService {
      * @return UserResponse
      */
     UserResponse getUserByEmail(String email);
+
+    /**
+     * Update existing user.
+     *
+     * @param id      User ID
+     * @param request Updated user details
+     * @return Updated UserResponse
+     */
+    UserResponse updateUser(
+            Long id,
+            UserRequest request
+    );
 }
 
 

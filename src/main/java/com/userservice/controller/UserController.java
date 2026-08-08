@@ -1,5 +1,6 @@
 package com.userservice.controller;
 
+import com.userservice.dto.request.UserRequest;
 import com.userservice.dto.response.PageResponse;
 import com.userservice.dto.response.UserResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -189,6 +190,26 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Update an existing user.
+     *
+     * @param id user id
+     * @param request updated user details
+     * @return updated user response
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponse> updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody UserRequest request) {
+
+        log.info("Received request to update user with id: {}", id);
+
+        UserResponse response = userService.updateUser(id, request);
+
+        log.info("User updated successfully with id: {}", id);
+
+        return ResponseEntity.ok(response);
+    }
 
 }
 
