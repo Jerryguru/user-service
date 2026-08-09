@@ -6,6 +6,7 @@ import com.userservice.dto.response.PageResponse;
 import com.userservice.dto.response.UserResponse;
 import com.userservice.exception.DuplicateEmailException;
 import com.userservice.exception.UserNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -593,6 +594,33 @@ public class UserServiceImpl implements UserService {
                 updatedUser
         );
     }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long id) {
+
+        // Log incoming delete request.
+        log.info("Delete user request received for ID : {}", id);
+
+        // Retrieve user or throw exception if not found.
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> {
+
+                    // Log missing user before throwing exception.
+                    log.warn("User not found with ID : {}", id);
+
+                    return new UserNotFoundException(
+                            "User not found with ID : " + id
+                    );
+                });
+
+        // Delete the existing user.
+        userRepository.delete(user);
+
+        // Log successful deletion.
+        log.info("User deleted successfully with ID : {}", id);
+    }
+
     /**
      * ==========================================================
      * Converts User Entity into UserResponse DTO.

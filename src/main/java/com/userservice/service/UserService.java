@@ -6,6 +6,7 @@ import com.userservice.dto.request.UserRequest;
 import com.userservice.dto.response.PageResponse;
 import com.userservice.dto.response.UserRegistrationResponse;
 import com.userservice.dto.response.UserResponse;
+import com.userservice.exception.UserNotFoundException;
 
 import java.util.List;
 
@@ -104,6 +105,15 @@ public interface UserService {
             Long id,
             PatchUserRequest request
     );
+    /**
+     * Deletes a user by ID.
+     *
+     * @param id User ID
+     * @throws UserNotFoundException if user does not exist
+     */
+
+    void deleteUser(Long id);
+
 }
 
 

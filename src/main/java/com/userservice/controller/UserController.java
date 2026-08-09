@@ -232,7 +232,27 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Deletes a user by ID.
+     *
+     * @param id user ID
+     * @return success response
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(
+            @PathVariable Long id) {
 
+        // Log incoming delete request.
+        log.info("Delete request received for user ID : {}", id);
+
+        // Delegate delete operation to service layer.
+        userService.deleteUser(id);
+
+        // Log successful delete response.
+        log.info("Delete request completed for user ID : {}", id);
+
+        return ResponseEntity.ok("User deleted successfully.");
+    }
 }
 
 
